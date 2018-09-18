@@ -14,6 +14,7 @@ import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.utilities.ProgressTracker.Step;
+import net.corda.core.utilities.UntrustworthyData;
 
 import static com.example.contract.IOUContract.IOU_CONTRACT_ID;
 import static net.corda.core.contracts.ContractsDSL.requireThat;
@@ -83,6 +84,9 @@ public class ExampleFlow {
             // Obtain a reference to the notary we want to use.
             final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
+            FlowSession flowSession = initiateFlow(otherParty);
+            flowSession.send("Hello!");
+
             // Stage 1.
             progressTracker.setCurrentStep(GENERATING_TRANSACTION);
             // Generate an unsigned transaction.
@@ -131,6 +135,10 @@ public class ExampleFlow {
         @Suspendable
         @Override
         public SignedTransaction call() throws FlowException {
+
+            String unwrap = otherPartyFlow.receive(String.class).unwrap(s -> s);
+            System.out.println("!!! " + unwrap);
+
             class SignTxFlow extends SignTransactionFlow {
                 private SignTxFlow(FlowSession otherPartyFlow, ProgressTracker progressTracker) {
                     super(otherPartyFlow, progressTracker);
