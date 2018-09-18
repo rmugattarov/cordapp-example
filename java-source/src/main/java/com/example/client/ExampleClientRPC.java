@@ -1,6 +1,6 @@
 package com.example.client;
 
-import com.example.state.IOUState;
+import com.example.state.SummationState;
 import net.corda.client.rpc.CordaRPCClient;
 import net.corda.client.rpc.CordaRPCClientConfiguration;
 import net.corda.core.contracts.StateAndRef;
@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class ExampleClientRPC {
     private static final Logger logger = LoggerFactory.getLogger(ExampleClientRPC.class);
 
-    private static void logState(StateAndRef<IOUState> state) {
+    private static void logState(StateAndRef<SummationState> state) {
         logger.info("{}", state.getState().getData());
     }
 
@@ -37,12 +37,10 @@ public class ExampleClientRPC {
         // Can be amended in the com.example.Main file.
         final CordaRPCOps proxy = client.start("user1", "test").getProxy();
 
-        // Grab all existing and future IOU states in the vault.
-        final DataFeed<Vault.Page<IOUState>, Vault.Update<IOUState>> dataFeed = proxy.vaultTrack(IOUState.class);
-        final Vault.Page<IOUState> snapshot = dataFeed.getSnapshot();
-        final Observable<Vault.Update<IOUState>> updates = dataFeed.getUpdates();
+        final DataFeed<Vault.Page<SummationState>, Vault.Update<SummationState>> dataFeed = proxy.vaultTrack(SummationState.class);
+        final Vault.Page<SummationState> snapshot = dataFeed.getSnapshot();
+        final Observable<Vault.Update<SummationState>> updates = dataFeed.getUpdates();
 
-        // Log the 'placed' IOUs and listen for new ones.
         snapshot.getStates().forEach(ExampleClientRPC::logState);
         updates.toBlocking().subscribe(update -> update.getProduced().forEach(ExampleClientRPC::logState));
     }
