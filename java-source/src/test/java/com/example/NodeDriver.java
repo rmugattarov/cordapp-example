@@ -30,16 +30,11 @@ public class NodeDriver {
                             dsl.startNode(new NodeParameters()
                                     .withProvidedName(new CordaX500Name("PartyB", "New York", "US"))
                                     .withCustomOverrides(ImmutableMap.of("rpcSettings.address", "localhost:10011", "rpcSettings.adminAddress", "localhost:10051", "webAddress", "localhost:10012"))
-                                    .withRpcUsers(ImmutableList.of(user))),
-                            dsl.startNode(new NodeParameters()
-                                    .withProvidedName(new CordaX500Name("PartyC", "Paris", "FR"))
-                                    .withCustomOverrides(ImmutableMap.of("rpcSettings.address", "localhost:10014", "rpcSettings.adminAddress", "localhost:10054", "webAddress", "localhost:10015"))
                                     .withRpcUsers(ImmutableList.of(user))));
 
                     try {
                         dsl.startWebserver(nodeFutures.get(0).get());
                         dsl.startWebserver(nodeFutures.get(1).get());
-                        dsl.startWebserver(nodeFutures.get(2).get());
 
                     } catch (Throwable e) {
                         System.err.println("Encountered exception in node startup: " + e.getMessage());
